@@ -6,6 +6,7 @@ import {
   arrayUnion,
   collection,
   doc,
+  getDoc,
   getDocs,
   query,
   serverTimestamp,
@@ -86,8 +87,21 @@ const LeftSidebar = () => {
   };
 
   const setChat = async (item) =>{
-   setMessagesId(item.messageId);
-   setChatUser(item);
+    try {
+      setMessagesId(item.messageId);
+      setChatUser(item);
+        const userChatsRef = doc(db,'chats',userData.id);
+        const userChatsSnapshot = await getDoc(userChatsRef);
+        const userChatsData = userChatsSnapshot.data();
+        console.log(userChatsData);
+        const chatIndex = userChatsData.chatsData.findIndex((c)=>c.messageId === item.messageId);
+        userChatsData.chatsData[chatIndex].messageSeen = true;
+        await updateDoc(userChatsRef,{
+          chatsData:userChatsData.chatsData
+        })
+    } catch (error) {
+      toast.error(error.message);
+    }
   }
 
   return (
@@ -123,7 +137,7 @@ const LeftSidebar = () => {
           chatData &&
           chatData.length > 0 &&
           chatData.map((item, index) => (
-            <div onClick={()=>setChat(item)} key={index} className="friends">
+            <div onClick={()=>setChat(item)} key={index} className={`friends ${item.messageSeen || item.messageId === messagesId ? "" : "border"}`}>
               <img
                 src={item.userData?.avatar || assets.default_avatar}
                 alt=""
