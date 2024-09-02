@@ -14,7 +14,7 @@ import { toast } from "react-toastify";
 import upload from "../../lib/upload";
 
 const ChatBox = () => {
-  const { userData, messagesId, chatUser, messages, setMessages, chatVisible,setChatVisible } =useContext(AppContext);
+  const { userData, messagesId, chatUser, messages, setMessages, chatVisible,setChatVisible } = useContext(AppContext);
 
   const [input, setInput] = useState("");
 
@@ -117,7 +117,7 @@ const ChatBox = () => {
     if (messagesId) {
       const unSub = onSnapshot(doc(db, "messages", messagesId), (res) => {
         setMessages(res.data().messages.reverse());
-        console.log(res.data().messages.reverse())
+        // console.log(res.data().messages.reverse())
       });
       return () => {
         unSub();

@@ -51,6 +51,28 @@ const LeftSidebar = () => {
     } catch (error) {}
   };
 
+/// sechat and messageSeen controled here**
+
+  const setChat = async (item) =>{
+    try {
+      setMessagesId(item.messageId);
+      setChatUser(item);
+        const userChatsRef = doc(db,'chats',userData.id);
+        const userChatsSnapshot = await getDoc(userChatsRef);
+        const userChatsData = userChatsSnapshot.data();
+        console.log(userChatsData);
+        const chatIndex = userChatsData.chatsData.findIndex((c)=>c.messageId === item.messageId);
+        userChatsData.chatsData[chatIndex].messageSeen = true;
+        await updateDoc(userChatsRef,{
+          chatsData:userChatsData.chatsData
+        })
+        setChatVisible(true);
+    } catch (error) {
+      // toast.error(error.message);
+      console.error(error);
+    }
+  }
+
   const addChat = async () => {
     const messagesRef = collection(db, "messages");
     const chatsRef = collection(db, "chats");
@@ -67,18 +89,18 @@ const LeftSidebar = () => {
           lastMessage: "",
           rId: userData.id,
             updatedAt: Date.now(),
-          messageSeen: true,
-        }),
-      });
+          messageSeen: true
+        })
+      })
 
       await updateDoc(doc(chatsRef, userData.id), {
         chatsData: arrayUnion({
           messageId: newMessageRef.id,
           lastMessage: "",
           rId: user.id,
-            updatedAt: Date.now(),
-          messageSeen: true,
-        }),
+          updatedAt: Date.now(),
+          messageSeen: true
+        })
       })
 
       const uSnap = await getDoc(doc(db,"users",user.id));
@@ -97,26 +119,8 @@ const LeftSidebar = () => {
       toast.error(error.message);
       console.error(error);
     }
-  };
-
-  const setChat = async (item) =>{
-    try {
-      setMessagesId(item.messageId);
-      setChatUser(item);
-        const userChatsRef = doc(db,'chats',userData.id);
-        const userChatsSnapshot = await getDoc(userChatsRef);
-        const userChatsData = userChatsSnapshot.data();
-        console.log(userChatsData);
-        const chatIndex = userChatsData.chatsData.findIndex((c)=>c.messageId === item.messageId);
-        userChatsData.chatsData[chatIndex].messageSeen = true;
-        await updateDoc(userChatsRef,{
-          chatsData:userChatsData.chatsData
-        })
-        setChatVisible(true);
-    } catch (error) {
-      toast.error(error.message);
-    }
   }
+
 
   useEffect(()=>{
     const updateChatUserData = async () =>{
