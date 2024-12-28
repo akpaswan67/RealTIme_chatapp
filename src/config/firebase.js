@@ -79,5 +79,4 @@ const resetPass = async (email) =>{
 		toast.error(error.message);
 	}
 }
-
 export {signup,login,logout,auth,db,resetPass}
